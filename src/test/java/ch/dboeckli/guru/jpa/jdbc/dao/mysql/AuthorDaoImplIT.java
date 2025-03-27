@@ -58,4 +58,19 @@ class AuthorDaoImplIT {
         assertThat(updated.getFirstName()).isEqualTo("Meister");
         assertThat(updated.getLastName()).isEqualTo("Thompson");
     }
+
+    @Test
+    void deleteAuthorById() {
+        Author authorToDelete = new Author();
+        authorToDelete.setFirstName("The");
+        authorToDelete.setLastName("Ghost");
+
+        Author saved = authorDao.createAuthor(authorToDelete);
+        assertThat(saved).isNotNull();
+
+        authorDao.deleteAuthorById(saved.getId());
+
+        Author deletedAuthor = authorDao.getById(saved.getId());
+        assertThat(deletedAuthor).isNull();
+    }
 }

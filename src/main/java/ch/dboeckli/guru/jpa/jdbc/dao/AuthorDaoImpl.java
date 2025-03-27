@@ -134,6 +134,27 @@ public class AuthorDaoImpl implements AuthorDao {
         return this.getById(author.getId());
     }
 
+    @Override
+    public void deleteAuthorById(Long id) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement("DELETE from author where id = ?");
+            statement.setLong(1, id);
+            statement.execute();
+        } catch (SQLException ex) {
+            log.error("Error while deleting author: {}", ex.getMessage(), ex);
+        } finally {
+            try{
+                closeConnection(null, statement, connection);
+            } catch (SQLException ex){
+                log.error("Error closing database resources: {}", ex.getMessage(), ex);
+            }
+        }
+    }
+
     private void closeConnection(ResultSet resultSet, PreparedStatement statement, Connection connection) throws SQLException {
         if (resultSet != null) resultSet.close();
         if (statement != null) statement.close();
