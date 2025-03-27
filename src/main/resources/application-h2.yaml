@@ -1,6 +1,6 @@
 spring:
   application:
-    name: sdjpa-intro
+    name: sdjpa-jdbc
 
   docker:
     compose:
@@ -30,9 +30,6 @@ spring:
   h2:
     console:
       enabled: true
-
-  liquibase:
-    enabled: false
 
   flyway:
     enabled: false
