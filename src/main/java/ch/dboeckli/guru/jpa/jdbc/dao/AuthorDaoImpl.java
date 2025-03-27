@@ -28,12 +28,7 @@ public class AuthorDaoImpl implements AuthorDao {
             resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                Author author = new Author();
-                author.setId(id);
-                author.setFirstName(resultSet.getString("first_name"));
-                author.setLastName(resultSet.getString("last_name"));
-
-                return author;
+                return getAuthorFromResultSet(resultSet);
             }
         } catch (SQLException e) {
             log.error("Error while retrieving author by ID: {}", e.getMessage(), e);
@@ -62,12 +57,7 @@ public class AuthorDaoImpl implements AuthorDao {
             resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                Author author = new Author();
-                author.setId(resultSet.getLong("id"));
-                author.setFirstName(resultSet.getString("first_name"));
-                author.setLastName(resultSet.getString("last_name"));
-
-                return author;
+                return getAuthorFromResultSet(resultSet);
             }
         } catch (SQLException e) {
             log.error("Error while retrieving author by Name: {}", e.getMessage(), e);
@@ -124,5 +114,13 @@ public class AuthorDaoImpl implements AuthorDao {
         if (resultSet != null) resultSet.close();
         if (statement != null) statement.close();
         if (connection != null) connection.close();
+    }
+
+    private Author getAuthorFromResultSet(ResultSet resultSet) throws SQLException {
+        Author author = new Author();
+        author.setId(resultSet.getLong("id"));
+        author.setFirstName(resultSet.getString("first_name"));
+        author.setLastName(resultSet.getString("last_name"));
+        return author;
     }
 }
