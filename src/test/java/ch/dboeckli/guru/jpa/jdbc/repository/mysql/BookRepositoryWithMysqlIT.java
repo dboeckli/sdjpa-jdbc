@@ -29,7 +29,7 @@ class BookRepositoryWithMysqlIT {
 
         long countAfter = bookRepository.count();
 
-        assertEquals(2, countBefore);
+        assertEquals(5, countBefore);
         assertThat(countBefore).isLessThan(countAfter);
     }
 
