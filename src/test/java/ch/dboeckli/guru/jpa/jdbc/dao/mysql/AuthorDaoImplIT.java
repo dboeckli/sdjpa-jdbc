@@ -32,4 +32,30 @@ class AuthorDaoImplIT {
         Author foundAuthor = authorDao.findAuthorByName("Craig", "Walls");
         assertThat(foundAuthor).isNotNull();
     }
+
+    @Test
+    void testCreateAuthor() {
+        Author author = new Author();
+        author.setFirstName("Hansjakob");
+        author.setLastName("Studer");
+
+        Author saved = authorDao.createAuthor(author);
+
+        assertThat(saved).isNotNull();
+    }
+
+    @Test
+    void testUpdateAuthor() {
+        Author author = new Author();
+        author.setFirstName("Meister");
+        author.setLastName("Eder");
+
+        Author saved = authorDao.createAuthor(author);
+
+        saved.setLastName("Thompson");
+        Author updated = authorDao.updateAuthor(saved);
+
+        assertThat(updated.getFirstName()).isEqualTo("Meister");
+        assertThat(updated.getLastName()).isEqualTo("Thompson");
+    }
 }

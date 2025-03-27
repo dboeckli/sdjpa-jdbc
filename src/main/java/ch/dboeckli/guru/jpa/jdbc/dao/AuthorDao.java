@@ -10,4 +10,6 @@ public interface AuthorDao {
 
     Author createAuthor(Author author);
 
+    Author updateAuthor(Author author);
+
 }

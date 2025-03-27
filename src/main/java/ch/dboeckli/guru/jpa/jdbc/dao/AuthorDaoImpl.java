@@ -109,6 +109,31 @@ public class AuthorDaoImpl implements AuthorDao {
         }
     }
 
+    @Override
+    public Author updateAuthor(Author author) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement("UPDATE author set first_name = ?, last_name = ? where author.id = ?");
+            statement.setString(1, author.getFirstName());
+            statement.setString(2, author.getLastName());
+            statement.setLong(3, author.getId());
+            statement.execute();
+        } catch (SQLException e) {
+            log.error("Error while updating author: {}", e.getMessage(), e);
+        } finally {
+            try {
+                closeConnection(resultSet, statement, connection);
+            } catch (SQLException e) {
+                log.error("Error closing database resources: {}", e.getMessage(), e);
+            }
+        }
+        return this.getById(author.getId());
+    }
+
     private void closeConnection(ResultSet resultSet, PreparedStatement statement, Connection connection) throws SQLException {
         if (resultSet != null) resultSet.close();
         if (statement != null) statement.close();
