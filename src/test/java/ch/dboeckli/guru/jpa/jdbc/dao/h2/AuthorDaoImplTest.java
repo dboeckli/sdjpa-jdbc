@@ -20,6 +20,19 @@ class AuthorDaoImplTest {
     AuthorDao authorDao;
 
     @Test
+    void testGetAuthor() {
+        Author author = new Author();
+        author.setFirstName("JohnX");
+        author.setLastName("DoeX");
+
+        Author createdAuthor = authorDao.createAuthor(author);
+        assertThat(createdAuthor).isNotNull();
+
+        Author authorCreated = authorDao.getById(createdAuthor.getId());
+        assertThat(authorCreated).isNotNull();
+    }
+
+    @Test
     void testCreateAndGetAuthor() {
         Author author = new Author();
         author.setFirstName("John");
