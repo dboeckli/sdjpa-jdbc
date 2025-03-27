@@ -1,6 +1,6 @@
 package ch.dboeckli.guru.jpa.jdbc.dao;
 
-import ch.dboeckli.guru.jpa.jdbc.domain.Author;
+import ch.dboeckli.guru.jpa.jdbc.domain.Book;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,27 +13,24 @@ import static ch.dboeckli.guru.jpa.jdbc.dao.ConnectionHandler.closeConnection;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class AuthorDaoImpl implements AuthorDao {
+public class BookDaoImpl implements BookDao {
 
     private final DataSource dataSource;
-
     @Override
-    public Author getById(Long id) {
+    public Book getById(Long id) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("SELECT * FROM author where id = ?");
+            statement = connection.prepareStatement("SELECT * FROM book where id = ?");
             statement.setLong(1, id);
             resultSet = statement.executeQuery();
-
             if (resultSet.next()) {
-                return getAuthorFromResultSet(resultSet);
+                return getBookFromRS(resultSet);
             }
         } catch (SQLException e) {
-            log.error("Error while retrieving author by ID: {}", e.getMessage(), e);
+            log.error("Error while retrieving book by ID: {}", e.getMessage(), e);
             return null;
         } finally {
             closeConnection(resultSet, statement, connection);
@@ -42,23 +39,21 @@ public class AuthorDaoImpl implements AuthorDao {
     }
 
     @Override
-    public Author findAuthorByName(String firstName, String lastName) {
+    public Book findBookByTitle(String title) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("SELECT * FROM author where first_name = ? and last_name = ?");
-            statement.setString(1, firstName);
-            statement.setString(2, lastName);
+            statement = connection.prepareStatement("SELECT * FROM book where title = ?");
+            statement.setString(1, title);
             resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                return getAuthorFromResultSet(resultSet);
+                return getBookFromRS(resultSet);
             }
         } catch (SQLException e) {
-            log.error("Error while retrieving author by Name: {}", e.getMessage(), e);
+            log.error("Error while retrieving book by Title: {}", e.getMessage(), e);
             return null;
         } finally {
             closeConnection(resultSet, statement, connection);
@@ -67,20 +62,23 @@ public class AuthorDaoImpl implements AuthorDao {
     }
 
     @Override
-    public Author createAuthor(Author author) {
+    public Book saveNewBook(Book book) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
 
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("INSERT INTO author (first_name, last_name) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, author.getFirstName());
-            statement.setString(2, author.getLastName());
+            statement = connection.prepareStatement("INSERT INTO book (isbn, publisher, title, author_id) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, book.getIsbn());
+            statement.setString(2, book.getPublisher());
+            statement.setString(3, book.getTitle());
+            statement.setLong(4, book.getAuthorId());
+            statement.execute();
 
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
-                throw new SQLException("Creating author failed, no rows affected.");
+                throw new SQLException("Creating book failed, no rows affected.");
             }
 
             resultSet = statement.getGeneratedKeys();
@@ -88,10 +86,10 @@ public class AuthorDaoImpl implements AuthorDao {
                 Long generatedId = resultSet.getLong(1);
                 return this.getById(generatedId);
             } else {
-                throw new SQLException("Creating author failed, no ID obtained.");
+                throw new SQLException("Creating book failed, no ID obtained.");
             }
         } catch (SQLException e) {
-            log.error("Error while creating author: {}", e.getMessage(), e);
+            log.error("Error while creating book: {}", e.getMessage(), e);
             return null;
         } finally {
             closeConnection(resultSet, statement, connection);
@@ -99,47 +97,53 @@ public class AuthorDaoImpl implements AuthorDao {
     }
 
     @Override
-    public Author updateAuthor(Author author) {
+    public Book updateBook(Book book) {
         Connection connection = null;
         PreparedStatement statement = null;
+        ResultSet resultSet = null;
 
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("UPDATE author set first_name = ?, last_name = ? where author.id = ?");
-            statement.setString(1, author.getFirstName());
-            statement.setString(2, author.getLastName());
-            statement.setLong(3, author.getId());
+            statement = connection.prepareStatement("UPDATE book set isbn = ?, publisher = ?, title = ?, author_id = ? where id = ?");
+            statement.setString(1, book.getIsbn());
+            statement.setString(2, book.getPublisher());
+            statement.setString(3, book.getTitle());
+            statement.setLong(4, book.getAuthorId());
+            statement.setLong(5, book.getId());
             statement.execute();
         } catch (SQLException e) {
-            log.error("Error while updating author: {}", e.getMessage(), e);
+            log.error("Error while updating book: {}", e.getMessage(), e);
+            return null;
         } finally {
-            closeConnection(null, statement, connection);
+            closeConnection(resultSet, statement, connection);
         }
-        return this.getById(author.getId());
+        return getById(book.getId());
     }
 
     @Override
-    public void deleteAuthorById(Long id) {
+    public void deleteBookById(Long id) {
         Connection connection = null;
         PreparedStatement statement = null;
 
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("DELETE from author where id = ?");
+            statement = connection.prepareStatement("DELETE from book where id = ?");
             statement.setLong(1, id);
             statement.execute();
         } catch (SQLException ex) {
-            log.error("Error while deleting author: {}", ex.getMessage(), ex);
+            log.error("Error while deleting book: {}", ex.getMessage(), ex);
         } finally {
             closeConnection(null, statement, connection);
         }
     }
 
-    private Author getAuthorFromResultSet(ResultSet resultSet) throws SQLException {
-        Author author = new Author();
-        author.setId(resultSet.getLong("id"));
-        author.setFirstName(resultSet.getString("first_name"));
-        author.setLastName(resultSet.getString("last_name"));
-        return author;
+    private Book getBookFromRS(ResultSet resultSet) throws SQLException {
+        Book book = new Book();
+        book.setId(resultSet.getLong("id"));
+        book.setIsbn(resultSet.getString("isbn"));
+        book.setPublisher(resultSet.getString("publisher"));
+        book.setTitle(resultSet.getString("title"));
+        book.setAuthorId(resultSet.getLong("author_id"));
+        return book;
     }
 }
