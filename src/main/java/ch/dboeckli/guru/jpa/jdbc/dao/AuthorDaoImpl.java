@@ -93,8 +93,7 @@ public class AuthorDaoImpl implements AuthorDao {
             resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
                 Long generatedId = resultSet.getLong(1);
-                author.setId(generatedId);
-                return author;
+                return this.getById(generatedId);
             } else {
                 throw new SQLException("Creating author failed, no ID obtained.");
             }
