@@ -34,11 +34,7 @@ public class AuthorDaoImpl implements AuthorDao {
             log.error("Error while retrieving author by ID: {}", e.getMessage(), e);
             return null;
         } finally {
-            try {
-                closeConnection(resultSet, statement, connection);
-            } catch (SQLException e) {
-                log.error("Error while closing resources: {}", e.getMessage(), e);
-            }
+            closeConnection(resultSet, statement, connection);
         }
         return null;
     }
@@ -63,11 +59,7 @@ public class AuthorDaoImpl implements AuthorDao {
             log.error("Error while retrieving author by Name: {}", e.getMessage(), e);
             return null;
         } finally {
-            try {
-                closeConnection(resultSet, statement, connection);
-            } catch (SQLException e) {
-                log.error("Error closing database resources: {}", e.getMessage(), e);
-            }
+            closeConnection(resultSet, statement, connection);
         }
         return null;
     }
@@ -101,11 +93,7 @@ public class AuthorDaoImpl implements AuthorDao {
             log.error("Error while creating author: {}", e.getMessage(), e);
             return null;
         } finally {
-            try {
-                closeConnection(resultSet, statement, connection);
-            } catch (SQLException e) {
-                log.error("Error closing database resources: {}", e.getMessage(), e);
-            }
+            closeConnection(resultSet, statement, connection);
         }
     }
 
@@ -113,7 +101,6 @@ public class AuthorDaoImpl implements AuthorDao {
     public Author updateAuthor(Author author) {
         Connection connection = null;
         PreparedStatement statement = null;
-        ResultSet resultSet = null;
 
         try {
             connection = dataSource.getConnection();
@@ -125,11 +112,7 @@ public class AuthorDaoImpl implements AuthorDao {
         } catch (SQLException e) {
             log.error("Error while updating author: {}", e.getMessage(), e);
         } finally {
-            try {
-                closeConnection(resultSet, statement, connection);
-            } catch (SQLException e) {
-                log.error("Error closing database resources: {}", e.getMessage(), e);
-            }
+            closeConnection(null, statement, connection);
         }
         return this.getById(author.getId());
     }
@@ -147,18 +130,18 @@ public class AuthorDaoImpl implements AuthorDao {
         } catch (SQLException ex) {
             log.error("Error while deleting author: {}", ex.getMessage(), ex);
         } finally {
-            try{
-                closeConnection(null, statement, connection);
-            } catch (SQLException ex){
-                log.error("Error closing database resources: {}", ex.getMessage(), ex);
-            }
+            closeConnection(null, statement, connection);
         }
     }
 
-    private void closeConnection(ResultSet resultSet, PreparedStatement statement, Connection connection) throws SQLException {
-        if (resultSet != null) resultSet.close();
-        if (statement != null) statement.close();
-        if (connection != null) connection.close();
+    private void closeConnection(ResultSet resultSet, PreparedStatement statement, Connection connection) {
+        try{
+            if (resultSet != null) resultSet.close();
+            if (statement != null) statement.close();
+            if (connection != null) connection.close();
+        } catch (SQLException ex){
+            log.error("Error closing database resources: {}", ex.getMessage(), ex);
+        }
     }
 
     private Author getAuthorFromResultSet(ResultSet resultSet) throws SQLException {
