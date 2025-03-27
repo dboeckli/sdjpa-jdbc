@@ -20,11 +20,13 @@ class AuthorDaoImplTest {
     AuthorDao authorDao;
 
     @Test
-    void testGetAuthor() {
+    void testCreateAndGetAuthor() {
         Author author = new Author();
         author.setFirstName("John");
         author.setLastName("Doe");
+
         Author createdAuthor = authorDao.createAuthor(author);
+        assertThat(createdAuthor).isNotNull();
 
         Author foundAuthor = authorDao.getById(createdAuthor.getId());
         assertThat(foundAuthor).isNotNull();

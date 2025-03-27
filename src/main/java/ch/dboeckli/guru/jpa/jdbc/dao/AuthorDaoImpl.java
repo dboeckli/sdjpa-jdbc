@@ -18,13 +18,14 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public Author getById(Long id) {
         Connection connection = null;
-        Statement statement = null;
+        PreparedStatement statement = null;
         ResultSet resultSet = null;
 
         try {
             connection = dataSource.getConnection();
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM author where id = " + id);
+            statement = connection.prepareStatement("SELECT * FROM author where id = ?");
+            statement.setLong(1, id);
+            resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
                 Author author = new Author();
@@ -37,6 +38,12 @@ public class AuthorDaoImpl implements AuthorDao {
         } catch (SQLException e) {
             log.error("Error while retrieving author by ID: {}", e.getMessage(), e);
             return null;
+        } finally {
+            try {
+                closeConnection(resultSet, statement, connection);
+            } catch (SQLException e) {
+                log.error("Error while closing resources: {}", e.getMessage(), e);
+            }
         }
         return null;
     }
@@ -44,22 +51,22 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public Author createAuthor(Author author) {
         Connection connection = null;
-        PreparedStatement ps = null;
+        PreparedStatement statement = null;
         ResultSet resultSet = null;
 
         try {
             connection = dataSource.getConnection();
-            ps = connection.prepareStatement("INSERT INTO author (first_name, last_name) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, author.getFirstName());
-            ps.setString(2, author.getLastName());
+            statement = connection.prepareStatement("INSERT INTO author (first_name, last_name) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, author.getFirstName());
+            statement.setString(2, author.getLastName());
 
-            int affectedRows = ps.executeUpdate();
+            int affectedRows = statement.executeUpdate();
 
             if (affectedRows == 0) {
                 throw new SQLException("Creating author failed, no rows affected.");
             }
 
-            resultSet = ps.getGeneratedKeys();
+            resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
                 Long generatedId = resultSet.getLong(1);
                 author.setId(generatedId);
@@ -72,12 +79,16 @@ public class AuthorDaoImpl implements AuthorDao {
             return null;
         } finally {
             try {
-                if (resultSet != null) resultSet.close();
-                if (ps != null) ps.close();
-                if (connection != null) connection.close();
+                closeConnection(resultSet, statement, connection);
             } catch (SQLException e) {
                 log.error("Error closing database resources: {}", e.getMessage(), e);
             }
         }
+    }
+
+    private void closeConnection(ResultSet resultSet, PreparedStatement statement, Connection connection) throws SQLException {
+        if (resultSet != null) resultSet.close();
+        if (statement != null) statement.close();
+        if (connection != null) connection.close();
     }
 }
