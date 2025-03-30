@@ -21,7 +21,7 @@ public class Book {
     private String isbn;
     private String publisher;
 
-    @Transient
+    @Transient // Hibernate ignores this field
     private Author authorId;
 
     public Book(String title, String isbn, String publisher) {
