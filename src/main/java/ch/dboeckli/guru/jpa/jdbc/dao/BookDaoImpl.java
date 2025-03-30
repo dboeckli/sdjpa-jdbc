@@ -16,6 +16,9 @@ import static ch.dboeckli.guru.jpa.jdbc.dao.ConnectionHandler.closeConnection;
 public class BookDaoImpl implements BookDao {
 
     private final DataSource dataSource;
+
+    private final AuthorDao authorDao;
+
     @Override
     public Book getById(Long id) {
         Connection connection = null;
@@ -73,7 +76,11 @@ public class BookDaoImpl implements BookDao {
             statement.setString(1, book.getIsbn());
             statement.setString(2, book.getPublisher());
             statement.setString(3, book.getTitle());
-            statement.setLong(4, book.getAuthorId());
+            if (book.getAuthorId()!= null) {
+                statement.setLong(4, book.getAuthorId().getId());
+            } else {
+                statement.setNull(4, Types.BIGINT);
+            }
             statement.execute();
 
             int affectedRows = statement.executeUpdate();
@@ -108,7 +115,11 @@ public class BookDaoImpl implements BookDao {
             statement.setString(1, book.getIsbn());
             statement.setString(2, book.getPublisher());
             statement.setString(3, book.getTitle());
-            statement.setLong(4, book.getAuthorId());
+            if (book.getAuthorId()!= null) {
+                statement.setLong(4, book.getAuthorId().getId());
+            } else {
+                statement.setNull(4, Types.BIGINT);
+            }
             statement.setLong(5, book.getId());
             statement.execute();
         } catch (SQLException e) {
@@ -143,7 +154,7 @@ public class BookDaoImpl implements BookDao {
         book.setIsbn(resultSet.getString("isbn"));
         book.setPublisher(resultSet.getString("publisher"));
         book.setTitle(resultSet.getString("title"));
-        book.setAuthorId(resultSet.getLong("author_id"));
+        book.setAuthorId(authorDao.getById(resultSet.getLong("author_id")));
         return book;
     }
 }
