@@ -14,11 +14,16 @@ spring:
     username: sa
     password: password
 
+  sql:
+    init:
+      schema-locations: classpath:h2-schema.sql
+      mode: always
+
   jpa:
     # we are using the h2 in compatible mode with mysql
     database: mysql
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     defer-datasource-initialization: false
     properties:
       hibernate:

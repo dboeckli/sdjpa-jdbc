@@ -21,7 +21,7 @@ class BookRepositoryWithH2Test {
     void testJpaTestSplice() {
         long countBefore = bookRepository.count();
 
-        bookRepository.save(new Book("My Book", "1235555", "Self", null));
+        bookRepository.save(new Book("My Book", "1235555", "Self"));
 
         long countAfter = bookRepository.count();
 

@@ -12,21 +12,19 @@ class BookTest {
         String title = "Test Book";
         String isbn = "1234567890";
         String publisher = "Test Publisher";
-        Long authorId = 1L;
 
-        Book book = new Book(title, isbn, publisher, authorId);
+        Book book = new Book(title, isbn, publisher);
 
         assertEquals(title, book.getTitle());
         assertEquals(isbn, book.getIsbn());
         assertEquals(publisher, book.getPublisher());
-        assertEquals(authorId, book.getAuthorId());
     }
 
     @Test
     void testBookEquality() {
-        Book book1 = new Book("Book 1", "ISBN1", "Publisher 1", 1L);
-        Book book2 = new Book("Book 1", "ISBN1", "Publisher 1", 1L);
-        Book book3 = new Book("Book 2", "ISBN2", "Publisher 2", 2L);
+        Book book1 = new Book("Book 1", "ISBN1", "Publisher 1");
+        Book book2 = new Book("Book 1", "ISBN1", "Publisher 1");
+        Book book3 = new Book("Book 2", "ISBN2", "Publisher 2");
 
         book1.setId(1L);
         book2.setId(1L);
@@ -38,8 +36,8 @@ class BookTest {
 
     @Test
     void testBookHashCode() {
-        Book book1 = new Book("Book 1", "ISBN1", "Publisher 1", 1L);
-        Book book2 = new Book("Book 1", "ISBN1", "Publisher 1", 1L);
+        Book book1 = new Book("Book 1", "ISBN1", "Publisher 1");
+        Book book2 = new Book("Book 1", "ISBN1", "Publisher 1");
 
         book1.setId(1L);
         book2.setId(1L);

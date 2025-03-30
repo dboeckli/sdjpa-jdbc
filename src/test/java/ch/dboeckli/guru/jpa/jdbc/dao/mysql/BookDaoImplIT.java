@@ -1,5 +1,6 @@
 package ch.dboeckli.guru.jpa.jdbc.dao.mysql;
 
+import ch.dboeckli.guru.jpa.jdbc.dao.AuthorDaoImpl;
 import ch.dboeckli.guru.jpa.jdbc.dao.BookDao;
 import ch.dboeckli.guru.jpa.jdbc.dao.BookDaoImpl;
 import ch.dboeckli.guru.jpa.jdbc.domain.Book;
@@ -13,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test_mysql")
-@Import(BookDaoImpl.class)
+@Import({ BookDaoImpl.class, AuthorDaoImpl.class })
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class BookDaoImplIT {
@@ -27,7 +28,6 @@ class BookDaoImplIT {
         book.setIsbn("1234");
         book.setPublisher("Self");
         book.setTitle("Guguseli Name");
-        book.setAuthorId(3L);
         Book saved = bookDao.saveNewBook(book);
 
         Book retrievedBook = bookDao.getById(saved.getId());
@@ -40,7 +40,6 @@ class BookDaoImplIT {
         book.setIsbn("1234");
         book.setPublisher("Self");
         book.setTitle("Giguseli Name");
-        book.setAuthorId(3L);
         bookDao.saveNewBook(book);
 
         Book retrievedBook = bookDao.findBookByTitle("Giguseli Name");
@@ -53,7 +52,6 @@ class BookDaoImplIT {
         book.setIsbn("1234");
         book.setPublisher("Self");
         book.setTitle("my book");
-        book.setAuthorId(3L);
         Book saved = bookDao.saveNewBook(book);
 
         assertThat(saved).isNotNull();
@@ -65,7 +63,6 @@ class BookDaoImplIT {
         book.setIsbn("1234");
         book.setPublisher("Self");
         book.setTitle("my book");
-        book.setAuthorId(3L);
         Book saved = bookDao.saveNewBook(book);
 
         saved.setTitle("New Book");
@@ -82,7 +79,6 @@ class BookDaoImplIT {
         book.setIsbn("1234");
         book.setPublisher("Self");
         book.setTitle("my book");
-        book.setAuthorId(3L);
         Book saved = bookDao.saveNewBook(book);
 
         bookDao.deleteBookById(saved.getId());

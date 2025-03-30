@@ -10,7 +10,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles("test_mysql")
 @DirtiesContext
@@ -25,12 +24,11 @@ class BookRepositoryWithMysqlIT {
     void testJpaTestSplice() {
         long countBefore = bookRepository.count();
 
-        bookRepository.save(new Book("My Book", "1235555", "Self", null));
+        bookRepository.save(new Book("My Book", "1235555", "Self"));
 
         long countAfter = bookRepository.count();
 
-        assertEquals(5, countBefore);
-        assertThat(countBefore).isLessThan(countAfter);
+        assertThat(countAfter).isEqualTo(countBefore + 1);
     }
 
 }
