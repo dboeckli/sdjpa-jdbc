@@ -8,7 +8,7 @@
         <option name="value" value="true" />
       </param>
     </additionalParameters>
-    <module name="sdjpa-intro" />
+    <module name="sdjpa-jdbc" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="ch.dboeckli.guru.jpa.jdbc.Spring6Application" />
     <method v="2">
       <option name="Make" enabled="true" />
