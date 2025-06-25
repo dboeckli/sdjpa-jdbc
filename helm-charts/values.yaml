@@ -2,7 +2,7 @@ global:
   timezone: Europe/Zurich
   timezonePath: /etc/localtime
   springDebug: false
-  namespace: sdjpa-spring-data-jpa
+  namespace: sdjpa-jdbc
 
 replicaCount: 1
 
@@ -55,7 +55,7 @@ mysql:
 
   rootPassword: password
 
-  serviceFQDN: "sdjpa-spring-data-jpa-sdjpa-jdbc.sdjpa-spring-data-jpa.svc.cluster.local"
+  serviceFQDN: "sdjpa-jdbc-sdjpa-jdbc-mysql.sdjpa-jdbc.svc.cluster.local"
 
 ingress:
   enabled: false
