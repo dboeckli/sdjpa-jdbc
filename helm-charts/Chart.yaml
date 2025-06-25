@@ -6,7 +6,7 @@ version: @helm.chart.version@
 appVersion: @project.version@
 
 dependencies:
-  - name: sdjpa-jdbc
+  - name: sdjpa-jdbc-mysql
     version: @helm.chart.version@
-    repository: file://charts/sdjpa-jdbc
+    repository: file://charts/sdjpa-jdbc-mysql
     condition: mysql.enabled
