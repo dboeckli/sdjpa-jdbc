@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "sdjpa-jdbc.fullname" . }}
+  name: {{ include "sdjpa-jdbc-mysql.fullname" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    {{- include "sdjpa-jdbc.labels" . | nindent 4 }}
+    {{- include "sdjpa-jdbc-mysql.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "sdjpa-jdbc.selectorLabels" . | nindent 6 }}
+      {{- include "sdjpa-jdbc-mysql.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: database
   template:
     metadata:
       labels:
-        {{- include "sdjpa-jdbc.selectorLabels" . | nindent 8 }}
+        {{- include "sdjpa-jdbc-mysql.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: database
     spec:
       containers:
@@ -29,7 +29,7 @@ spec:
               value: "true"
           envFrom:
             - secretRef:
-                name: {{ include "sdjpa-jdbc.fullname" . }}-secrets
+                name: {{ include "sdjpa-jdbc-mysql.fullname" . }}-secrets
           args:
             - --character-set-server=utf8mb4
             - --collation-server=utf8mb4_unicode_ci
@@ -47,4 +47,4 @@ spec:
           emptyDir: { }
         - name: mysql-init-script
           configMap:
-            name: {{ include "sdjpa-jdbc.fullname" . }}-init
+            name: {{ include "sdjpa-jdbc-mysql.fullname" . }}-init
