@@ -113,12 +113,12 @@ helm uninstall $APPLICATION_NAME  --namespace sdjpa-jdbc
 
 delete all
 ```powershell
-kubectl delete all --all -n spring-6-project-template
+kubectl delete all --all -n sdjpa-jdbc
 ```
 
 create busybox sidecar
 ```powershell
-kubectl run busybox-test --rm -it --image=busybox:1.36 --namespace=spring-6-project-template --command -- sh
+kubectl run busybox-test --rm -it --image=busybox:1.36 --namespace=sdjpa-jdbc --command -- sh
 ```
 
 You can use the actuator rest call to verify via port 30080
