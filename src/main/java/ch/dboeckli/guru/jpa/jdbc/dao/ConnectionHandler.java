@@ -13,11 +13,15 @@ import java.sql.SQLException;
 public class ConnectionHandler {
 
     public static void closeConnection(ResultSet resultSet, PreparedStatement statement, Connection connection) {
-        try{
-            if (resultSet != null) resultSet.close();
-            if (statement != null) statement.close();
-            if (connection != null) connection.close();
-        } catch (SQLException ex){
+        try {
+            if (resultSet != null)
+                resultSet.close();
+            if (statement != null)
+                statement.close();
+            if (connection != null)
+                connection.close();
+        }
+        catch (SQLException ex) {
             log.error("Error closing database resources: {}", ex.getMessage(), ex);
         }
     }

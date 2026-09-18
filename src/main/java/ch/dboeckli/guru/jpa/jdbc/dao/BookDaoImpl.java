@@ -32,10 +32,12 @@ public class BookDaoImpl implements BookDao {
             if (resultSet.next()) {
                 return getBookFromRS(resultSet);
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             log.error("Error while retrieving book by ID: {}", e.getMessage(), e);
             return null;
-        } finally {
+        }
+        finally {
             closeConnection(resultSet, statement, connection);
         }
         return null;
@@ -55,10 +57,12 @@ public class BookDaoImpl implements BookDao {
             if (resultSet.next()) {
                 return getBookFromRS(resultSet);
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             log.error("Error while retrieving book by Title: {}", e.getMessage(), e);
             return null;
-        } finally {
+        }
+        finally {
             closeConnection(resultSet, statement, connection);
         }
         return null;
@@ -72,13 +76,16 @@ public class BookDaoImpl implements BookDao {
 
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("INSERT INTO book (isbn, publisher, title, author_id) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            statement = connection.prepareStatement(
+                    "INSERT INTO book (isbn, publisher, title, author_id) VALUES (?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, book.getIsbn());
             statement.setString(2, book.getPublisher());
             statement.setString(3, book.getTitle());
-            if (book.getAuthorId()!= null) {
+            if (book.getAuthorId() != null) {
                 statement.setLong(4, book.getAuthorId().getId());
-            } else {
+            }
+            else {
                 statement.setNull(4, Types.BIGINT);
             }
             statement.execute();
@@ -92,13 +99,16 @@ public class BookDaoImpl implements BookDao {
             if (resultSet.next()) {
                 Long generatedId = resultSet.getLong(1);
                 return this.getById(generatedId);
-            } else {
+            }
+            else {
                 throw new SQLException("Creating book failed, no ID obtained.");
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             log.error("Error while creating book: {}", e.getMessage(), e);
             return null;
-        } finally {
+        }
+        finally {
             closeConnection(resultSet, statement, connection);
         }
     }
@@ -111,21 +121,25 @@ public class BookDaoImpl implements BookDao {
 
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("UPDATE book set isbn = ?, publisher = ?, title = ?, author_id = ? where id = ?");
+            statement = connection
+                .prepareStatement("UPDATE book set isbn = ?, publisher = ?, title = ?, author_id = ? where id = ?");
             statement.setString(1, book.getIsbn());
             statement.setString(2, book.getPublisher());
             statement.setString(3, book.getTitle());
-            if (book.getAuthorId()!= null) {
+            if (book.getAuthorId() != null) {
                 statement.setLong(4, book.getAuthorId().getId());
-            } else {
+            }
+            else {
                 statement.setNull(4, Types.BIGINT);
             }
             statement.setLong(5, book.getId());
             statement.execute();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             log.error("Error while updating book: {}", e.getMessage(), e);
             return null;
-        } finally {
+        }
+        finally {
             closeConnection(resultSet, statement, connection);
         }
         return getById(book.getId());
@@ -141,9 +155,11 @@ public class BookDaoImpl implements BookDao {
             statement = connection.prepareStatement("DELETE from book where id = ?");
             statement.setLong(1, id);
             statement.execute();
-        } catch (SQLException ex) {
+        }
+        catch (SQLException ex) {
             log.error("Error while deleting book: {}", ex.getMessage(), ex);
-        } finally {
+        }
+        finally {
             closeConnection(null, statement, connection);
         }
     }
@@ -157,4 +173,5 @@ public class BookDaoImpl implements BookDao {
         book.setAuthorId(authorDao.getById(resultSet.getLong("author_id")));
         return book;
     }
+
 }

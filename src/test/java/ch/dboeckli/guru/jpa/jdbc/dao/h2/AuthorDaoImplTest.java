@@ -87,4 +87,5 @@ class AuthorDaoImplTest {
         Author deletedAuthor = authorDao.getById(saved.getId());
         assertThat(deletedAuthor).isNull();
     }
+
 }

@@ -32,10 +32,12 @@ public class AuthorDaoImpl implements AuthorDao {
             if (resultSet.next()) {
                 return getAuthorFromResultSet(resultSet);
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             log.error("Error while retrieving author by ID: {}", e.getMessage(), e);
             return null;
-        } finally {
+        }
+        finally {
             closeConnection(resultSet, statement, connection);
         }
         return null;
@@ -57,10 +59,12 @@ public class AuthorDaoImpl implements AuthorDao {
             if (resultSet.next()) {
                 return getAuthorFromResultSet(resultSet);
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             log.error("Error while retrieving author by Name: {}", e.getMessage(), e);
             return null;
-        } finally {
+        }
+        finally {
             closeConnection(resultSet, statement, connection);
         }
         return null;
@@ -74,7 +78,8 @@ public class AuthorDaoImpl implements AuthorDao {
 
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("INSERT INTO author (first_name, last_name) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+            statement = connection.prepareStatement("INSERT INTO author (first_name, last_name) VALUES (?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, author.getFirstName());
             statement.setString(2, author.getLastName());
 
@@ -87,13 +92,16 @@ public class AuthorDaoImpl implements AuthorDao {
             if (resultSet.next()) {
                 Long generatedId = resultSet.getLong(1);
                 return this.getById(generatedId);
-            } else {
+            }
+            else {
                 throw new SQLException("Creating author failed, no ID obtained.");
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             log.error("Error while creating author: {}", e.getMessage(), e);
             return null;
-        } finally {
+        }
+        finally {
             closeConnection(resultSet, statement, connection);
         }
     }
@@ -105,14 +113,17 @@ public class AuthorDaoImpl implements AuthorDao {
 
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("UPDATE author set first_name = ?, last_name = ? where author.id = ?");
+            statement = connection
+                .prepareStatement("UPDATE author set first_name = ?, last_name = ? where author.id = ?");
             statement.setString(1, author.getFirstName());
             statement.setString(2, author.getLastName());
             statement.setLong(3, author.getId());
             statement.execute();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             log.error("Error while updating author: {}", e.getMessage(), e);
-        } finally {
+        }
+        finally {
             closeConnection(null, statement, connection);
         }
         return this.getById(author.getId());
@@ -128,9 +139,11 @@ public class AuthorDaoImpl implements AuthorDao {
             statement = connection.prepareStatement("DELETE from author where id = ?");
             statement.setLong(1, id);
             statement.execute();
-        } catch (SQLException ex) {
+        }
+        catch (SQLException ex) {
             log.error("Error while deleting author: {}", ex.getMessage(), ex);
-        } finally {
+        }
+        finally {
             closeConnection(null, statement, connection);
         }
     }
@@ -142,4 +155,5 @@ public class AuthorDaoImpl implements AuthorDao {
         author.setLastName(resultSet.getString("last_name"));
         return author;
     }
+
 }

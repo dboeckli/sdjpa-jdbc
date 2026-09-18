@@ -85,4 +85,5 @@ class BookDaoImplTest {
 
         assertThat(deleted).isNull();
     }
+
 }
