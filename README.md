@@ -1,8 +1,65 @@
-# Spring Data JPA - Introduction to Spring Data JDBC
+# Introduction to Spring Data JPA - DAO Pattern
 
-This repository contains source code examples to support my course Spring Data JPA and Hibernate Beginner to Guru.
+Spring Boot 4 / Spring Data JPA demo project on Java 25, demonstrating the classic DAO (Data Access
+Object) pattern with plain Spring JDBC and Spring Data JPA repositories against H2 (MySQL-compat mode)
+and MySQL, with schema management via Flyway.
 
-This projects demonstrates the old way with the DAO (Data Access Object) pattern
+## Architecture Overview
+
+```mermaid
+graph LR
+    Client(["💻 Client"])
+
+    subgraph App ["Spring Boot App :8080"]
+        Dao["DAO Pattern\n(plain Spring JDBC)"]
+        Repos["Spring Data JPA\nRepositories"]
+    end
+
+    subgraph Domain ["Domain Model"]
+        Model["Author / Book\n@GeneratedValue IDENTITY"]
+    end
+
+    subgraph Migration ["Schema Management"]
+        Flyway["Flyway\ndb/migration"]
+        H2Schema["h2-schema.sql"]
+    end
+
+    subgraph Databases ["Databases"]
+        H2[("H2\nIn-Memory")]
+        MySQL[("MySQL\nDocker")]
+    end
+
+    Client -->|"actuator :8080"| App
+    Dao --> Model
+    Repos --> Model
+    Dao <--> H2
+    Dao <--> MySQL
+    Repos <--> H2
+    Repos <--> MySQL
+    Flyway --> MySQL
+    H2Schema --> H2
+```
+
+## Database Schema
+
+```mermaid
+erDiagram
+    author {
+        BIGINT       id PK "auto_increment"
+        VARCHAR(255) first_name
+        VARCHAR(255) last_name
+    }
+
+    book {
+        BIGINT       id PK "auto_increment"
+        VARCHAR(255) title
+        VARCHAR(255) isbn
+        VARCHAR(255) publisher
+        BIGINT       author_id FK
+    }
+
+    author ||--o{ book : "author_id"
+```
 
 ## Java DAO Pattern
 
@@ -19,27 +76,43 @@ This projects demonstrates the old way with the DAO (Data Access Object) pattern
 - DAO API - Provide interface for CRUD operations (similar to Repository)
 - DAO Implementation - Implement persistence functionality
 
-![img.png](img.png)
+```mermaid
+flowchart LR
+    B[Business Layer]
+    I[DAO Interface]
+    D[DAO Impl]
+    DB[(Datenbank)]
+
+    B <--> I
+    I <--> D
+    D <--> DB
+```
+
+Interpretation
+
+- Die Business Layer enthält die Geschäftslogik.
+- Sie kommuniziert mit der DAO Interface.
+- Die DAO Interface definiert den Zugriff auf Daten, ohne die technische Umsetzung festzulegen.
+- Die DAO Impl implementiert dieses Interface.
+- Die DAO Impl liest Daten aus der Datenbank und schreibt Daten in die Datenbank.
 
 ## Flyway
 
-To enable Flyway in the MySQL profile, override the following properties when starting the application:
-- `spring.flyway.enabled = true`
-- `spring.docker.compose.file = compose-mysql.yaml`
-
-This profile starts MySQL on port 3306 using the Docker Compose file `compose-mysql-.yaml`.
+Flyway is enabled in the `mysql` profile (see `application-mysql.yaml`). That profile starts MySQL on
+port 3306 using the Docker Compose file `compose-mysql.yaml`.
 
 ## Docker
 
-Docker Compose file initially use the startup script located in `src/scripts`. These scripts create the database and users.
+The Docker Compose file uses the startup script `src/scripts/init-mysql.sql`, which creates the
+database and users.
 
 ## Kubernetes
 
 ### Generate Config Map for mysql init script
 
-When updating 'src/scripts/init-mysql-mysql.sql', apply the changes to the Kubernetes ConfigMap:
+When updating `src/scripts/init-mysql.sql`, apply the changes to the Kubernetes ConfigMap:
 
-```bash
+```powershell
 kubectl create configmap mysql-init-script --from-file=init.sql=src/scripts/init-mysql.sql --dry-run=client -o yaml | Out-File -Encoding utf8 k8s/mysql-init-script-configmap.yaml
 ```
 
