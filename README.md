@@ -77,7 +77,7 @@ cd target/helm/repo
 unpack
 
 ```powershell
-$file = Get-ChildItem -Filter sdjpa-jdbc-v*.tgz | Select-Object -First 1
+$file = Get-ChildItem -Filter sdjpa-jdbc-chart-*.tgz | Select-Object -First 1
 tar -xvf $file.Name
 ```
 
